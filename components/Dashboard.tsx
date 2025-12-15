@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { CensusData, DistrictAnalysis, MapMetric, VISUALIZATION_OPTIONS } from '../types';
-import { HKMap } from './HKMap';
+import HKTPUMap from './HKTPUMap';
 import { analyzeDemographics } from '../services/gemini';
 import { Sparkles, User, RefreshCcw } from 'lucide-react';
 
@@ -34,9 +34,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ userData }) => {
       
       {/* Map Layer */}
       <div className="absolute inset-0 z-0">
-         <HKMap 
-            data={mapData} 
-            selectedMetricLabel={selectedMetric.label} 
+         <HKTPUMap 
+            userData={userData}
+            visualizationMetric={selectedMetric.key}
+            mapData={mapData} 
          />
       </div>
 
