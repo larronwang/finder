@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { CensusData, DistrictAnalysis, MapMetric } from '../types';
+import { CensusData, DistrictAnalysis, MapMetric, VISUALIZATION_OPTIONS } from '../types';
 import { HKMap } from './HKMap';
 import { analyzeDemographics } from '../services/gemini';
-import { Sparkles, User, RefreshCcw, Layers } from 'lucide-react';
+import { Sparkles, User, RefreshCcw } from 'lucide-react';
 
 interface DashboardProps {
   userData: CensusData;
 }
 
-const METRICS: MapMetric[] = [
-  { key: 'age', label: 'Age' },
-  { key: 'ethnicity', label: 'Ethnicity' },
-  { key: 'industry', label: 'Industry' },
-  { key: 'housingType', label: 'Housing' },
-  { key: 'maritalStatus', label: 'Marital' },
-];
+const METRICS: MapMetric[] = VISUALIZATION_OPTIONS;
 
 export const Dashboard: React.FC<DashboardProps> = ({ userData }) => {
   const [selectedMetric, setSelectedMetric] = useState<MapMetric>(METRICS[0]);
@@ -32,34 +26,42 @@ export const Dashboard: React.FC<DashboardProps> = ({ userData }) => {
     setLoading(false);
   };
 
+  const mostCorrelatedDistrict = mapData.sort((a,b) => b.density - a.density)[0]?.id || userData.district || 'Unknown';
+
   return (
     <div className="flex flex-col h-screen w-screen bg-[#F2F2F7] relative overflow-hidden">
       
-      {/* Map Layer (Full Screen Background) */}
+      {/* Map Layer */}
       <div className="absolute inset-0 z-0">
-         <HKMap data={mapData} selectedMetricLabel={selectedMetric.label} />
+         <HKMap 
+            data={mapData} 
+            selectedMetricLabel={selectedMetric.label} 
+         />
       </div>
 
-      {/* Floating Top Navigation Bar (Glassmorphism) */}
+      {/* Floating Top Navigation Bar */}
       <header className="absolute top-0 left-0 right-0 z-20 pt-safe-top">
-         <div className="px-4 pb-3 pt-2 bg-white/70 backdrop-blur-xl border-b border-white/20 shadow-sm">
-            <div className="flex justify-between items-center mb-3">
-                <h1 className="text-[22px] font-bold text-black tracking-tight">HK Census Map</h1>
-                 <button className="h-8 w-8 bg-gray-200/50 rounded-full flex items-center justify-center text-[#007AFF] ios-active">
-                    <User size={18} />
+         <div className="px-5 pb-4 pt-3 bg-white/80 backdrop-blur-xl border-b border-white/20 shadow-lg">
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="text-[24px] font-bold text-black tracking-tight">Census Map</h1>
+                 <button 
+                       className="h-10 w-10 bg-gray-200/60 rounded-full flex items-center justify-center text-[#007AFF] ios-active"
+                       onClick={() => window.alert(`User: ${userData.fullName}\nAge: ${userData.age}`)} 
+                    >
+                    <User size={20} />
                 </button>
             </div>
             
-            {/* Segmented Control Style Metric Selector */}
-            <div className="flex bg-[#7676801F] rounded-lg p-0.5 overflow-x-auto no-scrollbar snap-x">
+            {/* Metric Selector */}
+            <div className="flex bg-[#7676801F] rounded-xl p-1 overflow-x-auto no-scrollbar snap-x">
                 {METRICS.map(metric => (
                     <button
                         key={metric.key}
                         onClick={() => setSelectedMetric(metric)}
-                        className={`flex-1 whitespace-nowrap px-3 py-1.5 rounded-[7px] text-[13px] font-medium transition-all snap-center ${
+                        className={`flex-1 whitespace-nowrap px-4 py-2.5 rounded-lg text-[16px] font-semibold transition-all snap-center ${
                             selectedMetric.key === metric.key
-                            ? 'bg-white text-black shadow-sm'
-                            : 'text-gray-500'
+                            ? 'bg-white text-black shadow-lg' 
+                            : 'text-gray-700'
                         }`}
                     >
                         {metric.label}
@@ -71,27 +73,27 @@ export const Dashboard: React.FC<DashboardProps> = ({ userData }) => {
 
       {/* Loading Overlay */}
       {loading && (
-          <div className="absolute top-32 left-1/2 transform -translate-x-1/2 z-30">
-              <div className="bg-white/80 backdrop-blur-md px-4 py-2 rounded-full shadow-lg flex items-center space-x-2 border border-white/50">
-                  <RefreshCcw className="animate-spin text-[#007AFF]" size={16} />
-                  <span className="text-black font-medium text-xs">Updating...</span>
+          <div className="absolute top-40 left-1/2 transform -translate-x-1/2 z-30">
+              <div className="bg-white/90 backdrop-blur-md px-5 py-3 rounded-full shadow-xl flex items-center space-x-2 border border-white/70">
+                  <RefreshCcw className="animate-spin text-[#007AFF]" size={20} />
+                  <span className="text-black font-semibold text-[16px]">Updating data...</span>
               </div>
           </div>
       )}
 
       {/* Bottom Sheet / Insight Card */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 pb-safe-bottom bg-white/80 backdrop-blur-2xl rounded-t-[30px] border-t border-white/20 shadow-[0_-5px_20px_rgba(0,0,0,0.1)]">
-           <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mt-2 mb-4"></div>
+      <div className="absolute bottom-0 left-0 right-0 z-20 pb-safe-bottom bg-white/95 backdrop-blur-2xl rounded-t-[30px] border-t border-white/30 shadow-[0_-5px_20px_rgba(0,0,0,0.15)]">
+           <div className="w-16 h-1 bg-gray-300 rounded-full mx-auto mt-3 mb-5"></div>
            <div className="px-6 pb-6">
-               <div className="flex items-start space-x-4">
-                  <div className="bg-gradient-to-tr from-[#007AFF] to-[#5856D6] p-2.5 rounded-xl shadow-md text-white shrink-0">
-                      <Sparkles size={24} />
+               <div className="flex items-start space-x-5">
+                  <div className="bg-gradient-to-tr from-[#007AFF] to-[#5856D6] p-3 rounded-xl shadow-lg text-white shrink-0">
+                      <Sparkles size={28} />
                   </div>
                   <div>
-                      <h3 className="text-[17px] font-semibold text-black mb-1">Demographic Insight</h3>
-                      <p className="text-[15px] text-gray-600 leading-snug">
-                          Your profile ({userData[selectedMetric.key]}) shows high correlation with residents in 
-                          <span className="text-[#007AFF] font-semibold"> {mapData.sort((a,b) => b.density - a.density)[0]?.id || 'Central'}</span>.
+                      <h3 className="text-[20px] font-bold text-black mb-1">Insight</h3>
+                      <p className="text-[17px] text-gray-700 leading-snug">
+                          High concentration of people with similar <span className="font-semibold">{selectedMetric.label}</span> profile found in 
+                          <span className="text-[#D32F2F] font-bold"> {mostCorrelatedDistrict}</span>.
                       </p>
                   </div>
                </div>
