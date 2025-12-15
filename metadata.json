@@ -1,0 +1,5 @@
+{
+  "name": "HK Census Connect",
+  "description": "A user-friendly, accessible mobile application for the Hong Kong Population Census, featuring an interactive demographic distribution map.",
+  "requestFramePermissions": []
+}
