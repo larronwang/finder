@@ -27,6 +27,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ userData }) => {
   };
 
   const mostCorrelatedDistrict = mapData.sort((a,b) => b.density - a.density)[0]?.id || userData.district || 'Unknown';
+  const userMetricValue = userData[selectedMetric.key as keyof CensusData];
 
   return (
     <div className="flex flex-col h-screen w-screen bg-[#F2F2F7] relative overflow-hidden">
@@ -76,7 +77,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ userData }) => {
           <div className="absolute top-40 left-1/2 transform -translate-x-1/2 z-30">
               <div className="bg-white/90 backdrop-blur-md px-5 py-3 rounded-full shadow-xl flex items-center space-x-2 border border-white/70">
                   <RefreshCcw className="animate-spin text-[#007AFF]" size={20} />
-                  <span className="text-black font-semibold text-[16px]">Updating data...</span>
+                  <span className="text-black font-semibold text-[16px]">Updating map data...</span>
               </div>
           </div>
       )}
@@ -90,9 +91,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ userData }) => {
                       <Sparkles size={28} />
                   </div>
                   <div>
-                      <h3 className="text-[20px] font-bold text-black mb-1">Insight</h3>
+                      <h3 className="text-[20px] font-bold text-black mb-1">Demographic Insight</h3>
                       <p className="text-[17px] text-gray-700 leading-snug">
-                          High concentration of people with similar <span className="font-semibold">{selectedMetric.label}</span> profile found in 
+                          People with similar <span className="font-semibold">{selectedMetric.label} ({userMetricValue})</span> are most concentrated in 
                           <span className="text-[#D32F2F] font-bold"> {mostCorrelatedDistrict}</span>.
                       </p>
                   </div>

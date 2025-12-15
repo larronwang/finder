@@ -2,9 +2,11 @@ import { GoogleGenAI, Type } from "@google/genai";
 import { CensusData, DistrictAnalysis } from "../types";
 
 const initGenAI = () => {
-  const apiKey = process.env.API_KEY;
+  // Safety check: process might not be defined in browser environments
+  const apiKey = (typeof process !== 'undefined' && process.env) ? process.env.API_KEY : undefined;
+  
   if (!apiKey) {
-    console.error("API Key is missing");
+    console.warn("API Key is missing or process.env is not accessible");
     return null;
   }
   return new GoogleGenAI({ apiKey });
